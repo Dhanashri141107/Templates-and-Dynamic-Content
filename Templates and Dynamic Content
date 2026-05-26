@@ -1,0 +1,92 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+# Sample data
+users = [
+    {"name": "Om", "role": "Student"},
+    {"name": "Aditi", "role": "Developer"},
+    {"name": "Raj", "role": "Designer"}
+]
+
+# Base layout template
+base_template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - My Flask Site</title>
+</head>
+<body>
+    <header>
+        <h1>My Flask Website</h1>
+        <nav>
+            <a href="/">Home</a> |
+            <a href="/about">About</a> |
+            <a href="/users">Users</a>
+        </nav>
+        <hr>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <hr>
+    <footer>
+        <p>&copy; 2026 My Flask App</p>
+    </footer>
+</body>
+</html>
+"""
+
+# Home page
+home_template = """
+{% extends "base" %}
+{% block content %}
+    <h2>Welcome!</h2>
+    <p>This is the home page with a consistent layout.</p>
+{% endblock %}
+"""
+
+# About page
+about_template = """
+{% extends "base" %}
+{% block content %}
+    <h2>About Us</h2>
+    <p>This site demonstrates Flask templates and dynamic content.</p>
+{% endblock %}
+"""
+
+# Users page
+users_template = """
+{% extends "base" %}
+{% block content %}
+    <h2>Users List</h2>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.name }} - {{ user.role }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+"""
+
+# Register templates in Flask's environment
+app.jinja_loader.mapping = {
+    "base": base_template,
+    "home.html": home_template,
+    "about.html": about_template,
+    "users.html": users_template,
+}
+
+@app.route("/")
+def home():
+    return render_template_string(home_template, title="Home")
+
+@app.route("/about")
+def about():
+    return render_template_string(about_template, title="About")
+
+@app.route("/users")
+def show_users():
+    return render_template_string(users_template, title="Users", users=users)
+
+if __name__ == "__main__":
+    app.run(debug=True)
